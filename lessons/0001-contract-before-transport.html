@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lesson 1: Contract before transport</title>
+    <link rel="stylesheet" href="../assets/course.css">
+    <script src="../assets/quiz.js" defer></script>
+    <script src="../assets/copy-code.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Contract before transport</h1>
+        <p class="lede">Learn where TypeScript's promise ends, then place ArkType validators at the two boundaries that matter.</p>
+        <div class="meta">
+          <span>5 minutes</span>
+          <span>One idea</span>
+          <span>One retrieval check</span>
+        </div>
+      </header>
+
+      <section aria-labelledby="goal">
+        <h2 id="goal">The goal</h2>
+        <p>By the end, you should be able to explain why an SDK needs runtime validation even when every project involved uses TypeScript.</p>
+        <div class="callout">
+          <p class="label">Core fact</p>
+          <p>TypeScript erases types when it emits JavaScript. A type annotation can guide the compiler, but it cannot inspect a request or response while the program runs.</p>
+        </div>
+        <p>This is why <code>response.json() as QuizResponse</code> is a promise made by the programmer, not proof about the server's JSON.</p>
+      </section>
+
+      <section aria-labelledby="flow">
+        <h2 id="flow">Protect both sides of the network</h2>
+        <div class="boundary-flow" aria-label="Data flowing from SDK input through HTTP JSON to SDK output">
+          <div class="boundary-step">
+            <strong>SDK input</strong>
+            <span>unknown caller data</span>
+          </div>
+          <div class="arrow" aria-hidden="true">→</div>
+          <div class="boundary-step">
+            <strong>HTTP JSON</strong>
+            <span>untrusted transport</span>
+          </div>
+          <div class="arrow" aria-hidden="true">→</div>
+          <div class="boundary-step">
+            <strong>SDK output</strong>
+            <span>validated questions</span>
+          </div>
+        </div>
+        <p>Our contract package will export ArkType schema values. The server and SDK will import those same values, so each boundary gets runtime checks and each codebase gets inferred static types.</p>
+      </section>
+
+      <section aria-labelledby="contract">
+        <h2 id="contract">The first contract</h2>
+        <pre><code>import { type } from "arktype"
+
+export const GetQuestionsInput = type({
+  category: "string",
+  count: "1 &lt;= number.integer &lt;= 50",
+  "difficulty?": "'easy' | 'medium' | 'hard'"
+})
+
+export type GetQuestionsInput =
+  typeof GetQuestionsInput.infer</code></pre>
+        <p><code>GetQuestionsInput</code> exists in both worlds. The value runs in JavaScript and validates data. <code>typeof GetQuestionsInput.infer</code> exists only during type checking.</p>
+        <pre><code>const result = GetQuestionsInput(maybeInput)
+
+if (result instanceof type.errors) {
+  throw new Error(result.summary)
+}
+
+// result is now validated and precisely typed</code></pre>
+      </section>
+
+      <section aria-labelledby="check">
+        <h2 id="check">Retrieval check</h2>
+        <div
+          class="quiz"
+          data-quiz
+          data-correct="schema"
+          data-correct-message="Correct. A schema value survives compilation and can also supply an inferred type."
+          data-incorrect-message="Not quite. Type aliases disappear when TypeScript emits JavaScript."
+        >
+          <p class="quiz-question">Which artifact should be our contract's source of truth?</p>
+          <div class="quiz-options">
+            <button type="button" data-answer="schema" aria-pressed="false">Schema value</button>
+            <button type="button" data-answer="alias" aria-pressed="false">Type aliases</button>
+          </div>
+          <p class="quiz-feedback" data-feedback aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section aria-labelledby="takeaway">
+        <h2 id="takeaway">Keep this sentence</h2>
+        <p class="takeaway">Static types protect code we compile. Runtime schemas protect data we receive.</p>
+        <p>Next, we will scaffold the contract package and turn this schema into an executable test.</p>
+      </section>
+
+      <section aria-labelledby="sources">
+        <h2 id="sources">Primary sources</h2>
+        <p><a href="https://www.typescriptlang.org/docs/handbook/typescript-from-scratch">TypeScript for the New Programmer</a> explains erased types and runtime behavior. <a href="https://arktype.io/docs/intro/your-first-type">ArkType's first-type guide</a> shows definition, inference, composition, and runtime validation.</p>
+      </section>
+
+      <footer>
+        <p><a href="../reference/type-safety-boundaries.html">Open the boundary reference sheet</a>. Ask your teacher about anything that did not land before moving on.</p>
+      </footer>
+    </main>
+  </body>
+</html>

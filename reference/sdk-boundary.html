@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reference: SDK boundary</title>
+    <link rel="stylesheet" href="../assets/course.css">
+    <script src="../assets/copy-code.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>SDK boundary</h1>
+        <p class="lede">Validate before sending and after receiving. Return only contracted values.</p>
+      </header>
+
+      <section aria-labelledby="flow">
+        <h2 id="flow">Client flow</h2>
+        <div class="boundary-flow" aria-label="SDK request and response flow">
+          <div class="boundary-step"><strong>Validate input</strong><span>or INVALID_INPUT</span></div>
+          <span class="arrow" aria-hidden="true">→</span>
+          <div class="boundary-step"><strong>Fetch and parse</strong><span>body is unknown</span></div>
+          <span class="arrow" aria-hidden="true">→</span>
+          <div class="boundary-step"><strong>Validate output</strong><span>or INVALID_RESPONSE</span></div>
+        </div>
+      </section>
+
+      <section aria-labelledby="pattern">
+        <h2 id="pattern">Success pattern</h2>
+        <pre><code>const validInput = GetQuestionsInput(input)
+if (validInput instanceof type.errors) {
+  throw new QuizClientError("INVALID_INPUT", validInput.summary)
+}
+
+const response = await fetch(url, request)
+const body: unknown = await response.json()
+const output = GetQuestionsOutput(body)
+
+if (output instanceof type.errors) {
+  throw new QuizClientError("INVALID_RESPONSE", output.summary)
+}
+
+return output.questions</code></pre>
+      </section>
+
+      <section aria-labelledby="errors">
+        <h2 id="errors">Error map</h2>
+        <ul>
+          <li><code>INVALID_INPUT</code> means the request never leaves the SDK.</li>
+          <li><code>API_ERROR</code> means the server returned a non-success status.</li>
+          <li><code>INVALID_RESPONSE</code> means a success body broke the output contract.</li>
+        </ul>
+      </section>
+
+      <footer>
+        <p><a href="../lessons/0004-make-fetch-return-trusted-data.html">Return to lesson four</a></p>
+      </footer>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reference: Type-safety boundaries</title>
+    <link rel="stylesheet" href="../assets/course.css">
+    <script src="../assets/copy-code.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Type-safety boundaries</h1>
+        <p class="lede">A quick test for deciding where the quiz system needs static types, runtime validation, or both.</p>
+      </header>
+
+      <section class="reference-grid" aria-label="Static and runtime protection comparison">
+        <article class="reference-card">
+          <h2>Static type</h2>
+          <ul>
+            <li>Checked by TypeScript</li>
+            <li>Protects compiled source</li>
+            <li>Erased from JavaScript</li>
+            <li>Cannot inspect JSON</li>
+          </ul>
+        </article>
+        <article class="reference-card">
+          <h2>Runtime schema</h2>
+          <ul>
+            <li>Runs as JavaScript</li>
+            <li>Accepts unknown data</li>
+            <li>Returns data or errors</li>
+            <li>Can infer a static type</li>
+          </ul>
+        </article>
+      </section>
+
+      <section aria-labelledby="rule">
+        <h2 id="rule">Boundary rule</h2>
+        <p class="takeaway">If data comes from a caller, network, file, environment variable, or database, treat it as unknown until a runtime schema proves its shape.</p>
+      </section>
+
+      <section aria-labelledby="placement">
+        <h2 id="placement">Quiz SDK placement</h2>
+        <div class="reference-grid">
+          <article class="reference-card">
+            <h3>Server request</h3>
+            <p>Validate query parameters before business logic.</p>
+          </article>
+          <article class="reference-card">
+            <h3>Server response</h3>
+            <p>Validate during development and contract tests.</p>
+          </article>
+          <article class="reference-card">
+            <h3>SDK options</h3>
+            <p>Validate before sending the HTTP request.</p>
+          </article>
+          <article class="reference-card">
+            <h3>SDK response</h3>
+            <p>Validate parsed JSON before returning questions.</p>
+          </article>
+        </div>
+      </section>
+
+      <footer>
+        <p><a href="../lessons/0001-contract-before-transport.html">Return to lesson one</a></p>
+      </footer>
+    </main>
+  </body>
+</html>

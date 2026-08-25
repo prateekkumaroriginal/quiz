@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lesson 4: Make fetch return trusted data</title>
+    <link rel="stylesheet" href="../assets/course.css">
+    <script src="../assets/copy-code.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Make fetch return trusted data</h1>
+        <p class="lede">Build an SDK method that validates what goes into the request and what comes out of the response.</p>
+        <div class="meta">
+          <span>9 minutes</span>
+          <span>SDK boundary</span>
+          <span>Ten passing tests</span>
+        </div>
+      </header>
+
+      <section aria-labelledby="two-gates">
+        <h2 id="two-gates">One method, two gates</h2>
+        <p>The method signature catches mistakes in TypeScript source. Runtime input validation also protects JavaScript users and callers that use unsafe assertions. Response validation protects every caller because the network can return anything.</p>
+        <div class="boundary-flow" aria-label="SDK validation flow">
+          <div class="boundary-step"><strong>Options contract</strong><span>validate before fetch</span></div>
+          <span class="arrow" aria-hidden="true">→</span>
+          <div class="boundary-step"><strong>HTTP response</strong><span>parse as unknown</span></div>
+          <span class="arrow" aria-hidden="true">→</span>
+          <div class="boundary-step"><strong>Output contract</strong><span>return typed questions</span></div>
+        </div>
+        <div class="callout">
+          <p class="label">SDK promise</p>
+          <p>If <code>getQuestions()</code> resolves, its result has passed the shared response contract.</p>
+        </div>
+      </section>
+
+      <section aria-labelledby="public-api">
+        <h2 id="public-api">Start with the consumer's view</h2>
+        <pre><code>const quiz = createQuizClient({
+  baseUrl: "https://quiz.example.com",
+})
+
+const questions = await quiz.getQuestions({
+  category: "science",
+  count: 5,
+  difficulty: "easy",
+})
+
+questions[0]?.prompt // string | undefined</code></pre>
+        <p>The consumer imports the SDK, not Hono and not the server package. The SDK hides transport details while returning the <code>Question[]</code> type inferred from ArkType.</p>
+      </section>
+
+      <section aria-labelledby="implementation">
+        <h2 id="implementation">Validate around fetch</h2>
+        <pre><code>async getQuestions(input) {
+  const validInput = GetQuestionsInput(input)
+
+  if (validInput instanceof type.errors) {
+    throw new QuizClientError("INVALID_INPUT", validInput.summary)
+  }
+
+  const response = await fetchImpl(`${baseUrl}/v1/questions`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(validInput),
+  })
+
+  const body: unknown = await response.json()
+
+  if (!response.ok) {
+    const apiError = ApiError(body)
+    // Convert the validated API error into an SDK error
+  }
+
+  const output = GetQuestionsOutput(body)
+
+  if (output instanceof type.errors) {
+    throw new QuizClientError("INVALID_RESPONSE", output.summary)
+  }
+
+  return output.questions
+}</code></pre>
+        <p><code>Response.json()</code> parses the body but can produce any JSON-representable value. Assigning it to <code>unknown</code> prevents that uncertainty from leaking past the SDK.</p>
+      </section>
+
+      <section aria-labelledby="failures">
+        <h2 id="failures">Name failures by responsibility</h2>
+        <div class="definition">
+          <h3><code>INVALID_INPUT</code></h3>
+          <p>The caller supplied options outside the contract. The SDK does not send a request.</p>
+        </div>
+        <div class="definition">
+          <h3><code>API_ERROR</code></h3>
+          <p>The server returned a non-success HTTP status. When possible, the SDK validates and preserves the shared API error message.</p>
+        </div>
+        <div class="definition">
+          <h3><code>INVALID_RESPONSE</code></h3>
+          <p>The server claimed success, but its body violated <code>GetQuestionsOutput</code>. This is a broken API contract, not a valid empty result.</p>
+        </div>
+      </section>
+
+      <section aria-labelledby="test-seams">
+        <h2 id="test-seams">Inject fetch to test the boundary</h2>
+        <p>The client accepts a fetch-compatible function. Tests can supply a fake response without making a real network request.</p>
+        <pre><code>it("rejects a successful response with the wrong shape", async () =&gt; {
+  const fetchMock = vi.fn&lt;typeof fetch&gt;(async () =&gt;
+    jsonResponse({ banana: true }),
+  )
+  const client = createQuizClient({
+    baseUrl: "https://quiz.example.com",
+    fetch: fetchMock,
+  })
+
+  await expect(
+    client.getQuestions({ category: "science", count: 1 }),
+  ).rejects.toMatchObject({ code: "INVALID_RESPONSE" })
+})</code></pre>
+        <div class="command-output" aria-label="Successful test output">Test Files  3 passed (3)
+Tests       10 passed (10)</div>
+      </section>
+
+      <section aria-labelledby="sources">
+        <h2 id="sources">Primary sources</h2>
+        <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Response/json">MDN's Response.json() reference</a> states that parsing may produce any JSON-representable JavaScript value. <a href="https://developer.mozilla.org/en-US/docs/Web/API/Response/ok">MDN's Response.ok reference</a> defines success as an HTTP status from 200 through 299. <a href="https://arktype.io/docs/traversal-api">ArkType's traversal API</a> documents direct schema invocation and <code>type.errors</code>.</p>
+      </section>
+
+      <section aria-labelledby="qa">
+        <h2 id="qa">Q&amp;A</h2>
+        <ol class="qa-list">
+          <li>
+            <p>If TypeScript already checks the argument to <code>getQuestions()</code>, why validate it again at runtime?</p>
+            <details>
+              <summary>Show answer</summary>
+              <p>Published packages can be called from JavaScript, and TypeScript callers can bypass checks with assertions or <code>any</code>. Runtime validation stops bad input before the request.</p>
+            </details>
+          </li>
+          <li>
+            <p>The server returns HTTP 200 with <code>{ "banana": true }</code>. Which error should the SDK throw, and why?</p>
+            <details>
+              <summary>Show answer</summary>
+              <p><code>INVALID_RESPONSE</code>. The HTTP request succeeded, but <code>GetQuestionsOutput</code> rejected the response shape. Returning it would break the SDK's promise to return validated questions.</p>
+            </details>
+          </li>
+        </ol>
+      </section>
+
+      <footer>
+        <p><a href="0003-validate-before-business-logic.html">Previous lesson</a> · <a href="../reference/sdk-boundary.html">Open the SDK boundary reference</a>. Ask your teacher about any part of the error handling that is unclear.</p>
+      </footer>
+    </main>
+  </body>
+</html>

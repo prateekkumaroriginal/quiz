@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reference: Server boundary</title>
+    <link rel="stylesheet" href="../assets/course.css">
+    <script src="../assets/copy-code.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Server boundary</h1>
+        <p class="lede">The shortest safe path from an HTTP request to quiz business logic.</p>
+      </header>
+
+      <section aria-labelledby="flow">
+        <h2 id="flow">Request flow</h2>
+        <div class="boundary-flow" aria-label="Server request flow">
+          <div class="boundary-step"><strong>Parse</strong><span>body becomes unknown</span></div>
+          <span class="arrow" aria-hidden="true">→</span>
+          <div class="boundary-step"><strong>Validate</strong><span>schema checks shape</span></div>
+          <span class="arrow" aria-hidden="true">→</span>
+          <div class="boundary-step"><strong>Use</strong><span>business logic gets a type</span></div>
+        </div>
+      </section>
+
+      <section aria-labelledby="pattern">
+        <h2 id="pattern">Handler pattern</h2>
+        <pre><code>let body: unknown
+
+try {
+  body = await context.req.json()
+} catch {
+  return context.json(invalidRequest("Invalid JSON"), 400)
+}
+
+const input = GetQuestionsInput(body)
+
+if (input instanceof type.errors) {
+  return context.json(invalidRequest(input.summary), 400)
+}
+
+// Safe to use input.category and input.count</code></pre>
+      </section>
+
+      <section aria-labelledby="checklist">
+        <h2 id="checklist">Boundary checklist</h2>
+        <ul class="check-list">
+          <li>Keep external data as <code>unknown</code>.</li>
+          <li>Handle malformed JSON separately from a wrong data shape.</li>
+          <li>Return before business logic when validation fails.</li>
+          <li>Give error responses their own shared schema.</li>
+          <li>Test the route with real Request and Response objects.</li>
+        </ul>
+      </section>
+
+      <footer>
+        <p><a href="../lessons/0003-validate-before-business-logic.html">Return to lesson three</a></p>
+      </footer>
+    </main>
+  </body>
+</html>

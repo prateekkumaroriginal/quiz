@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lesson 2: Make the contract executable</title>
+    <link rel="stylesheet" href="../assets/course.css">
+    <script src="../assets/quiz.js" defer></script>
+    <script src="../assets/copy-code.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Make the contract executable</h1>
+        <p class="lede">Put the schemas in a shared pnpm package, then make malformed quiz data fail a real test.</p>
+        <div class="meta">
+          <span>7 minutes</span>
+          <span>Working code</span>
+          <span>Three passing tests</span>
+        </div>
+      </header>
+
+      <section aria-labelledby="result">
+        <h2 id="result">What exists now</h2>
+        <div class="file-tree" aria-label="Course project file tree">quiz-sdk-course/
+├── pnpm-workspace.yaml
+├── package.json
+├── tsconfig.json
+└── packages/
+    └── contracts/
+        ├── package.json
+        └── src/
+            ├── index.ts
+            └── index.test.ts</div>
+        <p><code>@quiz/contracts</code> is deliberately separate. The future server and SDK will depend on this package instead of copying its schemas.</p>
+        <div class="callout">
+          <p class="label">Design rule</p>
+          <p>Code that owns an API contract should not belong exclusively to either side of that contract.</p>
+        </div>
+      </section>
+
+      <section aria-labelledby="schema">
+        <h2 id="schema">One value, two jobs</h2>
+        <pre><code>export const GetQuestionsInput = type({
+  category: Category,
+  count: "1 &lt;= number.integer &lt;= 50",
+  "difficulty?": Difficulty
+})
+
+export type GetQuestionsInput =
+  typeof GetQuestionsInput.infer</code></pre>
+        <ul class="check-list">
+          <li>The exported value validates data while JavaScript runs.</li>
+          <li>The exported type checks callers while TypeScript compiles.</li>
+          <li>The numeric range is stricter than TypeScript's plain <code>number</code>.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="proof">
+        <h2 id="proof">Turn the claim into proof</h2>
+        <p>The most important test begins with valid JSON that has the wrong fields. Its type is explicitly <code>unknown</code>, preventing us from using it before validation.</p>
+        <pre><code>it("rejects valid JSON with the wrong response shape", () =&gt; {
+  const networkData: unknown =
+    JSON.parse('{"banana":true}')
+
+  const result = GetQuestionsOutput(networkData)
+
+  expect(result).toBeInstanceOf(type.errors)
+})</code></pre>
+        <p>The test does not merely inspect TypeScript diagnostics. It executes the validator that the SDK will later run against a real HTTP response.</p>
+      </section>
+
+      <section aria-labelledby="run">
+        <h2 id="run">Run the feedback loop</h2>
+        <pre><code>pnpm typecheck
+pnpm test</code></pre>
+        <div class="command-output" aria-label="Successful test output">Test Files  1 passed (1)
+Tests       3 passed (3)</div>
+        <p>These commands answer different questions. <code>typecheck</code> checks our source relationships. <code>test</code> proves what happens to actual values.</p>
+      </section>
+
+      <section aria-labelledby="check">
+        <h2 id="check">Retrieval check</h2>
+        <div
+          class="quiz"
+          data-quiz
+          data-correct="shared"
+          data-correct-message="Correct. Both sides import the same executable schema from @quiz/contracts."
+          data-incorrect-message="That would force the SDK to copy the contract or depend on server internals."
+        >
+          <p class="quiz-question">Where should request and response schemas live?</p>
+          <div class="quiz-options">
+            <button type="button" data-answer="shared" aria-pressed="false">Shared package</button>
+            <button type="button" data-answer="server" aria-pressed="false">Server package</button>
+          </div>
+          <p class="quiz-feedback" data-feedback aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section aria-labelledby="takeaway">
+        <h2 id="takeaway">Keep this sentence</h2>
+        <p class="takeaway">A shared contract is executable code imported by both sides, not a TypeScript type copied between them.</p>
+        <p>Next, the server will consume <code>@quiz/contracts</code> and validate an HTTP request before generating questions.</p>
+      </section>
+
+      <section aria-labelledby="sources">
+        <h2 id="sources">Primary sources</h2>
+        <p><a href="https://arktype.io/docs/intro/adding-constraints">ArkType's constraint guide</a> documents bounded integers and schema inference. <a href="https://pnpm.io/workspaces">pnpm's workspace guide</a> explains workspace packages and local linking. <a href="https://vitest.dev/guide/">Vitest's getting-started guide</a> documents the TypeScript test runner used here.</p>
+      </section>
+
+      <footer>
+        <p><a href="0001-contract-before-transport.html">Previous lesson</a> · <a href="../reference/arktype-contract-pattern.html">Open the contract pattern reference</a>. Ask your teacher about anything that did not land.</p>
+      </footer>
+    </main>
+  </body>
+</html>

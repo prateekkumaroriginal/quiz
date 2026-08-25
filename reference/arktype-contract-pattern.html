@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reference: ArkType contract pattern</title>
+    <link rel="stylesheet" href="../assets/course.css">
+    <script src="../assets/copy-code.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>ArkType contract pattern</h1>
+        <p class="lede">The small set of patterns used to define, infer, validate, and test every quiz contract.</p>
+      </header>
+
+      <section class="reference-grid" aria-label="ArkType contract operations">
+        <article class="reference-card">
+          <h2>Define</h2>
+          <pre><code>const Input = type({
+  count: "1 &lt;= number.integer &lt;= 50"
+})</code></pre>
+        </article>
+        <article class="reference-card">
+          <h2>Infer</h2>
+          <pre><code>type Input =
+  typeof Input.infer</code></pre>
+        </article>
+        <article class="reference-card">
+          <h2>Validate</h2>
+          <pre><code>const result = Input(data)
+
+if (result instanceof type.errors) {
+  throw Error(result.summary)
+}</code></pre>
+        </article>
+        <article class="reference-card">
+          <h2>Test</h2>
+          <pre><code>expect(Input(badData))
+  .toBeInstanceOf(type.errors)</code></pre>
+        </article>
+      </section>
+
+      <section aria-labelledby="commands">
+        <h2 id="commands">Course commands</h2>
+        <pre><code>pnpm install
+pnpm typecheck
+pnpm test</code></pre>
+      </section>
+
+      <footer>
+        <p><a href="../lessons/0002-make-the-contract-executable.html">Return to lesson two</a></p>
+      </footer>
+    </main>
+  </body>
+</html>
