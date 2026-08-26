@@ -70,11 +70,11 @@ describe("GetQuestionsInput", () => {
     expect(result).toBeInstanceOf(type.errors);
   });
 
-  it("rejects a non-boolean includeAnswers", () => {
+  it("rejects a non-boolean includeAnswer", () => {
     const result = GetQuestionsInput({
       category: "science",
       count: 5,
-      includeAnswers: "yes",
+      includeAnswer: "yes",
     });
 
     expect(result).toBeInstanceOf(type.errors);

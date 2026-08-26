@@ -28,7 +28,7 @@ export const GetQuestionsInput = type({
   category: Category,
   "difficulty?": Difficulty,
   count: "1 <= number.integer <= 50",
-  includeAnswers: "boolean?"
+  includeAnswer: "boolean?"
 });
 export type GetQuestionsInput = typeof GetQuestionsInput.infer;
 

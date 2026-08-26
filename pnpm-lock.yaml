@@ -214,6 +214,15 @@ importers:
         specifier: ^4.1.11
         version: 4.1.11(vite@8.2.2)
 
+  packages/api:
+    dependencies:
+      '@quiz/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      arktype:
+        specifier: ^2.2.3
+        version: 2.2.3
+
   packages/contracts:
     dependencies:
       arktype:
