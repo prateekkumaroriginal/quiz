@@ -229,6 +229,15 @@ importers:
         specifier: ^2.2.3
         version: 2.2.3
 
+  packages/sdk:
+    dependencies:
+      '@quiz/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      arktype:
+        specifier: ^2.2.3
+        version: 2.2.3
+
 packages:
 
   '@ark/schema@0.56.2':

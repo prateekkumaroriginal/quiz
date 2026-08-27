@@ -2,6 +2,8 @@ import type {
   Difficulty,
   GetQuestionsInput,
   GetQuestionsOutputWithAnswers,
+  Question,
+  QuestionWithAnswer,
 } from "./index.js";
 
 
@@ -34,3 +36,10 @@ const outputWithAnswers: GetQuestionsOutputWithAnswers = {
 };
 
 void outputWithAnswers;
+
+declare const questionWithAnswer: QuestionWithAnswer;
+
+// @ts-expect-error an answer-bearing question is not answer-free
+const answerFreeQuestion: Question = questionWithAnswer;
+
+void answerFreeQuestion;

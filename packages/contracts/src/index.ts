@@ -21,7 +21,11 @@ export const QuestionWithAnswer = type({
 );
 export type QuestionWithAnswer = typeof QuestionWithAnswer.infer;
 
-export const Question = QuestionWithAnswer.omit("correctChoiceIndex");
+export const Question = QuestionWithAnswer
+  .merge({
+    "+": "reject",
+    "correctChoiceIndex?": "never",
+  });
 export type Question = typeof Question.infer;
 
 export const GetQuestionsInput = type({
