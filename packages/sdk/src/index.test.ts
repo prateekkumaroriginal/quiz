@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { getQuestions } from "./index.js";
+import { getQuestions, QuizApiError } from "./index.js";
 
 describe("getQuestions", () => {
   it("requests questions using the supplied options", async () => {
@@ -127,4 +127,58 @@ describe("getQuestions", () => {
       "Quiz API request failed with status 503",
     );
   });
+
+  it("throws a typed API error from a contract error response", async () => {
+    const fetchMock = vi.fn<typeof fetch>(async () =>
+      Response.json(
+        {
+          code: "INVALID_REQUEST",
+          message: "The request parameters are invalid",
+        },
+        { status: 400 },
+      ),
+    );
+
+    const result = getQuestions(
+      {
+        category: "science",
+        count: 2,
+      },
+      {
+        baseUrl: "https://quiz.example",
+        fetch: fetchMock,
+      },
+    );
+
+    await expect(result).rejects.toBeInstanceOf(QuizApiError);
+    await expect(result).rejects.toMatchObject({
+      status: 400,
+      code: "INVALID_REQUEST",
+      message: "The request parameters are invalid",
+    });
+  });
+
+  it("translates a network failure and preserves its cause", async () => {
+    const networkError = new Error("socket disconnected");
+    const fetchMock = vi.fn<typeof fetch>(async () => {
+      throw networkError;
+    });
+
+    const result = getQuestions(
+      {
+        category: "science",
+        count: 2,
+      },
+      {
+        baseUrl: "https://quiz.example",
+        fetch: fetchMock,
+      },
+    );
+
+    await expect(result).rejects.toMatchObject({
+      message: "Could not reach quiz API",
+      cause: networkError,
+    });
+  });
+
 });

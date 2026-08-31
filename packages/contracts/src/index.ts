@@ -44,5 +44,11 @@ export type GetQuestionsOutput = typeof GetQuestionsOutput.infer;
 export const GetQuestionsOutputWithAnswers = GetQuestionsOutput.merge({
   questions: QuestionWithAnswer.array(),
 });
-
 export type GetQuestionsOutputWithAnswers = typeof GetQuestionsOutputWithAnswers.infer;
+
+export const GetQuestionsError = type({
+  "+": "reject",
+  code: "'INVALID_REQUEST'",
+  message: "string"
+});
+export type GetQuestionsError = typeof GetQuestionsError.infer;

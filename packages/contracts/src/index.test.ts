@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   Category,
   Difficulty,
+  GetQuestionsError,
   GetQuestionsInput,
   GetQuestionsOutput,
   GetQuestionsOutputWithAnswers,
@@ -158,5 +159,26 @@ describe("GetQuestionsOutputWithAnswers", () => {
     };
 
     expect(GetQuestionsOutputWithAnswers(output)).toEqual(output);
+  });
+});
+
+describe("GetQuestionsError", () => {
+  it("accepts an invalid-request error response", () => {
+    const error = {
+      code: "INVALID_REQUEST",
+      message: "The request parameters are invalid",
+    };
+
+    expect(GetQuestionsError(error)).toEqual(error);
+  });
+
+  it("rejects undeclared error fields", () => {
+    const result = GetQuestionsError({
+      code: "INVALID_REQUEST",
+      message: "The request parameters are invalid",
+      internalDetails: "database connection string",
+    });
+
+    expect(result).toBeInstanceOf(type.errors);
   });
 });

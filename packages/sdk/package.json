@@ -6,5 +6,8 @@
   "dependencies": {
     "@quiz/contracts": "workspace:*",
     "arktype": "^2.2.3"
+  },
+  "devDependencies": {
+    "@quiz/api": "workspace:*"
   }
 }

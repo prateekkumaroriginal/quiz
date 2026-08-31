@@ -1,4 +1,5 @@
 import {
+  GetQuestionsError,
   GetQuestionsOutput,
   GetQuestionsOutputWithAnswers,
   type GetQuestionsInput,
@@ -47,9 +48,22 @@ export async function getQuestions(
     url.searchParams.set("includeAnswer", String(input.includeAnswer));
   }
 
-  const resp = await config.fetch(url);
+  let resp: Response;
+  try {
+    resp = await config.fetch(url);
+  } catch (cause) {
+    throw new Error(`Could not reach quiz API`, { cause });
+  }
+
   if (!resp.ok) {
-    throw new Error(`Quiz API request failed with status ${resp.status}`);
+    const data: unknown = await resp.json();
+    const parsedError = GetQuestionsError(data);
+
+    if (parsedError instanceof ArkErrors) {
+      throw new Error(`Quiz API request failed with status ${resp.status}`);
+    }
+
+    throw new QuizApiError(resp.status, parsedError);
   }
 
   const data: unknown = await resp.json();
@@ -64,4 +78,16 @@ export async function getQuestions(
   }
 
   return output;
+}
+
+export class QuizApiError extends Error {
+  readonly status: number;
+  readonly code: GetQuestionsError["code"];
+
+  constructor(status: number, error: GetQuestionsError) {
+    super(error.message);
+    this.name = "QuizApiError";
+    this.status = status;
+    this.code = error.code;
+  }
 }

@@ -237,6 +237,10 @@ importers:
       arktype:
         specifier: ^2.2.3
         version: 2.2.3
+    devDependencies:
+      '@quiz/api':
+        specifier: workspace:*
+        version: link:../api
 
 packages:
 
