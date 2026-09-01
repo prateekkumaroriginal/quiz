@@ -2,7 +2,7 @@ import {
   GetQuestionsError,
   GetQuestionsOutput,
   GetQuestionsOutputWithAnswers,
-} from "@quiz/contracts";
+} from "@prateekkumaroriginal/quiz-contracts";
 import { ArkErrors } from "arktype";
 import { describe, expect, it } from "vitest";
 import { handleRequest } from "./index.js";

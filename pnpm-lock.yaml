@@ -216,7 +216,7 @@ importers:
 
   packages/api:
     dependencies:
-      '@quiz/contracts':
+      '@prateekkumaroriginal/quiz-contracts':
         specifier: workspace:*
         version: link:../contracts
       arktype:
@@ -231,14 +231,14 @@ importers:
 
   packages/sdk:
     dependencies:
-      '@quiz/contracts':
+      '@prateekkumaroriginal/quiz-contracts':
         specifier: workspace:*
         version: link:../contracts
       arktype:
         specifier: ^2.2.3
         version: 2.2.3
     devDependencies:
-      '@quiz/api':
+      '@prateekkumaroriginal/quiz-api':
         specifier: workspace:*
         version: link:../api
 

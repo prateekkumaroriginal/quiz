@@ -1,5 +1,30 @@
-import type { GetQuestionsOutputWithAnswers } from "@quiz/contracts";
-import { getQuestions, type QuizSdkConfig } from "./index.js";
+import type { GetQuestionsOutputWithAnswers } from "@prateekkumaroriginal/quiz-contracts";
+import {
+  getQuestions,
+  type Category,
+  type Difficulty,
+  type GetQuestionsError,
+  type GetQuestionsInput,
+  type GetQuestionsOutput,
+  type GetQuestionsOutputWithAnswers as PublicGetQuestionsOutputWithAnswers,
+  type Question,
+  type QuestionWithAnswer,
+  type QuizSdkConfig,
+} from "./index.js";
+
+type PublicContractTypes = {
+  category: Category;
+  difficulty: Difficulty;
+  error: GetQuestionsError;
+  input: GetQuestionsInput;
+  output: GetQuestionsOutput;
+  outputWithAnswers: PublicGetQuestionsOutputWithAnswers;
+  question: Question;
+  questionWithAnswer: QuestionWithAnswer;
+};
+
+declare const publicContractTypes: PublicContractTypes;
+void publicContractTypes;
 
 declare const config: QuizSdkConfig;
 

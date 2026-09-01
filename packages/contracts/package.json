@@ -1,8 +1,29 @@
 {
-  "name": "@quiz/contracts",
+  "name": "@prateekkumaroriginal/quiz-contracts",
+  "version": "0.1.0",
+  "description": "Runtime-validated contracts for a type-safe quiz API.",
+  "license": "Apache-2.0",
   "private": true,
   "type": "module",
   "exports": "./src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepack": "pnpm build"
+  },
+  "files": [
+    "dist",
+    "src/index.ts"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      }
+    }
+  },
   "dependencies": {
     "arktype": "^2.2.3"
   }

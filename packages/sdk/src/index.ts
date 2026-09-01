@@ -3,7 +3,7 @@ import {
   GetQuestionsOutput,
   GetQuestionsOutputWithAnswers,
   type GetQuestionsInput,
-} from "@quiz/contracts";
+} from "@prateekkumaroriginal/quiz-contracts";
 import { ArkErrors } from "arktype";
 
 export type QuizSdkConfig = {
@@ -91,3 +91,14 @@ export class QuizApiError extends Error {
     this.code = error.code;
   }
 }
+
+export type {
+  Category,
+  Difficulty,
+  GetQuestionsError,
+  GetQuestionsInput,
+  GetQuestionsOutput,
+  GetQuestionsOutputWithAnswers,
+  Question,
+  QuestionWithAnswer,
+} from "@prateekkumaroriginal/quiz-contracts";

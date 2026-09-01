@@ -3,7 +3,7 @@ import {
   Difficulty,
   type GetQuestionsError,
   GetQuestionsInput,
-} from "@quiz/contracts";
+} from "@prateekkumaroriginal/quiz-contracts";
 import { ArkErrors, type } from "arktype";
 import { questions } from "./questions.js";
 

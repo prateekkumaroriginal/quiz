@@ -1,4 +1,4 @@
-import { handleRequest } from "@quiz/api";
+import { handleRequest } from "@prateekkumaroriginal/quiz-api";
 import { describe, expect, it } from "vitest";
 import { getQuestions } from "./index.js";
 

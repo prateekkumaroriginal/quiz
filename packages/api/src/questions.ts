@@ -1,4 +1,4 @@
-import type { QuestionWithAnswer } from "@quiz/contracts";
+import type { QuestionWithAnswer } from "@prateekkumaroriginal/quiz-contracts";
 
 export const questions = [
   {
