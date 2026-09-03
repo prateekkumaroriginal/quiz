@@ -1,0 +1,23 @@
+{
+  "name": "@prateekkumaroriginal/quiz-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": "./src/index.ts",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node --enable-source-maps dist/server.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.1",
+    "@prateekkumaroriginal/quiz-contracts": "workspace:*",
+    "arktype": "^2.2.3",
+    "hono": "^4.13.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.0",
+    "tsx": "^4.23.13"
+  }
+}

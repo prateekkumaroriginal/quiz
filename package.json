@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit && pnpm --filter @prateekkumaroriginal/quiz-api typecheck"
   },
   "devEngines": {
     "packageManager": {
