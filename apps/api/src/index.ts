@@ -5,7 +5,7 @@ import {
   GetQuestionsInput,
 } from "@prateekkumaroriginal/quiz-contracts";
 import { ArkErrors, type } from "arktype";
-import { questions } from "./questions.js";
+import { findQuestions } from "./questions.js";
 
 const GetQuestionsQuery = type({
   count: "string.integer.parse",
@@ -40,13 +40,7 @@ export const handleRequest = async (request: Request): Promise<Response> => {
     );
   }
 
-  const selectedQuestions = questions
-    .filter(
-      (q) =>
-        q.category === input.category &&
-        (input.difficulty === undefined || input.difficulty === q.difficulty),
-    )
-    .slice(0, input.count);
+  const selectedQuestions = await findQuestions(input);
 
   const responseQuestions = input.includeAnswer
     ? selectedQuestions

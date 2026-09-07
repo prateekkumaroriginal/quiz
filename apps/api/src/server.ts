@@ -1,6 +1,7 @@
 import { serve } from "@hono/node-server";
 import { app } from "./app.js";
 import process from "node:process";
+import { closeDatabase } from "./db/client.js";
 
 const server = serve(
   {
@@ -13,7 +14,9 @@ const server = serve(
 );
 
 const shutdown = () => {
-  server.close();
+  server.close(async () => {
+    await closeDatabase();
+  });
 };
 
 process.once("SIGINT", shutdown);

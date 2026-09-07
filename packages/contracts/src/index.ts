@@ -1,9 +1,13 @@
 import { type } from "arktype";
 
-export const Category = type("'science' | 'history' | 'geography'");
+export const categoryValues = ["science", "history", "geography"] as const;
+
+export const difficultyValues = ["easy", "medium", "hard"] as const;
+
+export const Category = type.enumerated(...categoryValues);
 export type Category = typeof Category.infer;
 
-export const Difficulty = type("'easy' | 'medium' | 'hard'");
+export const Difficulty = type.enumerated(...difficultyValues);
 export type Difficulty = typeof Difficulty.infer;
 
 export const QuestionWithAnswer = type({
@@ -16,39 +20,39 @@ export const QuestionWithAnswer = type({
   correctChoiceIndex: "number.integer >= 0",
 }).narrow((q, ctx) =>
   q.correctChoiceIndex < q.choices.length
-  ? true
-  : ctx.mustBe("have a correctChoiceIndex within choices"),
+    ? true
+    : ctx.mustBe("have a correctChoiceIndex within choices"),
 );
 export type QuestionWithAnswer = typeof QuestionWithAnswer.infer;
 
-export const Question = QuestionWithAnswer
-  .merge({
-    "+": "reject",
-    "correctChoiceIndex?": "never",
-  });
+export const Question = QuestionWithAnswer.merge({
+  "+": "reject",
+  "correctChoiceIndex?": "never",
+});
 export type Question = typeof Question.infer;
 
 export const GetQuestionsInput = type({
   category: Category,
   "difficulty?": Difficulty,
   count: "1 <= number.integer <= 50",
-  includeAnswer: "boolean?"
+  includeAnswer: "boolean?",
 });
 export type GetQuestionsInput = typeof GetQuestionsInput.infer;
 
 export const GetQuestionsOutput = type({
-  questions: Question.array()
+  questions: Question.array(),
 });
 export type GetQuestionsOutput = typeof GetQuestionsOutput.infer;
 
 export const GetQuestionsOutputWithAnswers = GetQuestionsOutput.merge({
   questions: QuestionWithAnswer.array(),
 });
-export type GetQuestionsOutputWithAnswers = typeof GetQuestionsOutputWithAnswers.infer;
+export type GetQuestionsOutputWithAnswers =
+  typeof GetQuestionsOutputWithAnswers.infer;
 
 export const GetQuestionsError = type({
   "+": "reject",
   code: "'INVALID_REQUEST'",
-  message: "string"
+  message: "string",
 });
 export type GetQuestionsError = typeof GetQuestionsError.infer;

@@ -23,7 +23,7 @@ describe("quiz SDK and API integration", () => {
     expect(output).toEqual({
       questions: [
         {
-          id: "2",
+          id: "00000000-0000-4000-8000-000000000002",
           prompt: "Which sense organ helps to see?",
           category: "science",
           choices: ["ears", "eyes"],
