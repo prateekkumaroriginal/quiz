@@ -9,3 +9,5 @@ app.use(cors());
 app.get("/health", (c) => c.json({ status: "ok" }));
 
 app.get("/questions", (c) => handleRequest(c.req.raw));
+
+export default app;
