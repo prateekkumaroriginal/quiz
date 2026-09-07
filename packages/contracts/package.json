@@ -4,9 +4,15 @@
   "description": "Runtime-validated contracts for a type-safe quiz API.",
   "license": "Apache-2.0",
   "type": "module",
-  "exports": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "prepare": "pnpm build",
     "prepack": "pnpm build"
   },
   "files": [

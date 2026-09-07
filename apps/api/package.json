@@ -5,9 +5,9 @@
   "type": "module",
   "exports": "./src/index.ts",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "pnpm --filter @prateekkumaroriginal/quiz-contracts build && tsx watch src/server.ts",
     "typecheck": "tsc --noEmit",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "pnpm --filter @prateekkumaroriginal/quiz-contracts build && tsc -p tsconfig.build.json",
     "start": "node --enable-source-maps dist/server.js",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
